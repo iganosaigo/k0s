@@ -63,14 +63,14 @@ require (
 
 // Kubernetes
 require (
-	k8s.io/api v0.31.5
-	k8s.io/apiextensions-apiserver v0.31.5
-	k8s.io/apimachinery v0.31.5
+	k8s.io/api v0.32.0
+	k8s.io/apiextensions-apiserver v0.32.0
+	k8s.io/apimachinery v0.32.0
 	k8s.io/cli-runtime v0.31.5
-	k8s.io/client-go v0.31.5
+	k8s.io/client-go v0.32.0
 	k8s.io/cloud-provider v0.31.5
 	k8s.io/cluster-bootstrap v0.31.5
-	k8s.io/component-base v0.31.5
+	k8s.io/component-base v0.32.0
 	k8s.io/component-helpers v0.31.5
 	k8s.io/cri-api v0.31.5
 	k8s.io/kube-aggregator v0.31.5
@@ -78,12 +78,13 @@ require (
 	k8s.io/kubelet v0.31.5
 	k8s.io/kubernetes v1.31.5
 	k8s.io/mount-utils v0.31.5
-	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8
-	sigs.k8s.io/controller-runtime v0.19.4
+	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738
+	sigs.k8s.io/controller-runtime v0.20.0
 	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
+	cel.dev/expr v0.18.0 // indirect
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230811130428-ced1acdcaa24 // indirect
 	github.com/AdamKorcz/go-118-fuzz-build v0.0.0-20230306123547-8075edf89bb0 // indirect
@@ -153,8 +154,8 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/btree v1.1.2 // indirect
-	github.com/google/cel-go v0.20.1 // indirect
+	github.com/google/btree v1.1.3 // indirect
+	github.com/google/cel-go v0.22.0 // indirect
 	github.com/google/certificate-transparency-go v1.1.4 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
@@ -226,7 +227,7 @@ require (
 	github.com/segmentio/backo-go v0.0.0-20200129164019-23eae7c10bd3 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
-	github.com/stoewer/go-strcase v1.2.0 // indirect
+	github.com/stoewer/go-strcase v1.3.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/weppos/publicsuffix-go v0.15.1-0.20210511084619-b1f36a2d6c0b // indirect
@@ -260,7 +261,7 @@ require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/term v0.28.0 // indirect
-	golang.org/x/time v0.5.0 // indirect
+	golang.org/x/time v0.7.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241015192408-796eee8c2d53 // indirect
@@ -271,19 +272,19 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/apiserver v0.31.5 // indirect
+	k8s.io/apiserver v0.32.0 // indirect
 	k8s.io/controller-manager v0.31.5 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kms v0.31.5 // indirect
-	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
+	k8s.io/kube-openapi v0.0.0-20241105132330-32ad38e42d3f // indirect
 	k8s.io/metrics v0.31.5 // indirect
 	oras.land/oras-go v1.2.5 // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.31.0 // indirect
-	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
+	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
 	sigs.k8s.io/kustomize/api v0.17.2 // indirect
 	sigs.k8s.io/kustomize/kustomize/v5 v5.4.2 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.17.1 // indirect
-	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.4.2 // indirect
 )
 
 // Replacements duplicated from upstream Kubernetes
