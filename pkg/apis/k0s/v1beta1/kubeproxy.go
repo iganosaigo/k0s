@@ -38,6 +38,7 @@ type KubeProxy struct {
 	// Defaults to "iptables"
 	Mode               string                         `json:"mode,omitempty"`
 	MetricsBindAddress string                         `json:"metricsBindAddress,omitempty"`
+	HealthzBindAddress string                         `json:"metricsBindAddress,omitempty"`
 	IPTables           KubeProxyIPTablesConfiguration `json:"iptables,omitempty"`
 	IPVS               KubeProxyIPVSConfiguration     `json:"ipvs,omitempty"`
 	NFTables           KubeProxyNFTablesConfiguration `json:"nftables,omitempty"`
@@ -85,6 +86,7 @@ func DefaultKubeProxy() *KubeProxy {
 	return &KubeProxy{
 		Mode:               ModeIptables,
 		MetricsBindAddress: "0.0.0.0:10249",
+		HealthzBindAddress: "0.0.0.0:10256",
 	}
 }
 

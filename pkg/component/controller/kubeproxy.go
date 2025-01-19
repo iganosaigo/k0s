@@ -46,8 +46,10 @@ type KubeProxy struct {
 	previousConfig proxyConfig
 }
 
-var _ manager.Component = (*KubeProxy)(nil)
-var _ manager.Reconciler = (*KubeProxy)(nil)
+var (
+	_ manager.Component  = (*KubeProxy)(nil)
+	_ manager.Reconciler = (*KubeProxy)(nil)
+)
 
 // NewKubeProxy creates new KubeProxy component
 func NewKubeProxy(k0sVars *config.CfgVars, nodeConfig *v1beta1.ClusterConfig) *KubeProxy {
@@ -134,8 +136,13 @@ func (k *KubeProxy) getConfig(clusterConfig *v1beta1.ClusterConfig) (proxyConfig
 		}
 	}
 	args := stringmap.StringMap{
-		"config":            "/var/lib/kube-proxy/config.conf",
 		"hostname-override": "$(NODE_NAME)",
+	}
+
+	if clusterConfig.Spec.API.OnlyBindToAddress {
+		args["config"] = "/tmp/mod_config/config.conf"
+	} else {
+		args["config"] = "/var/lib/kube-proxy/config.conf"
 	}
 
 	for name, value := range clusterConfig.Spec.Network.KubeProxy.ExtraArgs {
@@ -343,6 +350,24 @@ spec:
         prometheus.io/port: '10249'
     spec:
       priorityClassName: system-node-critical
+      initContainers:
+      - name: config-modifier
+        image: busybox:1.37.0
+        command:
+        - "/bin/sh"
+        - "-c"
+        - |
+          awk -v ip="$NODE_IP" '/healthzBindAddress:/ {$2 = "\"" ip ":10256\""} /metricsBindAddress:/ {$2 = "\"" ip ":10249\""} 1' /tmp/config/config.conf > /tmp/mod_config/config.conf
+        volumeMounts:
+        - name: modified-config
+          mountPath: /tmp/mod_config
+        - mountPath: /tmp/config
+          name: kube-proxy
+        env:
+          - name: NODE_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
       containers:
       - name: kube-proxy
         image: {{ .Image }}
@@ -364,6 +389,8 @@ spec:
         - mountPath: /lib/modules
           name: lib-modules
           readOnly: true
+        - mountPath: /tmp/mod_config
+          name: modified-config
         env:
           - name: NODE_NAME
             valueFrom:
@@ -372,6 +399,8 @@ spec:
       hostNetwork: true
       serviceAccountName: kube-proxy
       volumes:
+      - name: modified-config
+        emptyDir: {}
       - name: kube-proxy
         configMap:
           name: kube-proxy

@@ -57,9 +57,11 @@ type Konnectivity struct {
 	*prober.EventEmitter
 }
 
-var _ manager.Component = (*Konnectivity)(nil)
-var _ manager.Ready = (*Konnectivity)(nil)
-var _ prober.Healthz = (*Konnectivity)(nil)
+var (
+	_ manager.Component = (*Konnectivity)(nil)
+	_ manager.Ready     = (*Konnectivity)(nil)
+	_ prober.Healthz    = (*Konnectivity)(nil)
+)
 
 // Init ...
 func (k *Konnectivity) Init(ctx context.Context) error {
@@ -71,7 +73,7 @@ func (k *Konnectivity) Init(ctx context.Context) error {
 		k.EmitWithPayload("error getting UID for", err)
 		logrus.WithError(err).Warn("Running konnectivity as root")
 	}
-	err = dir.Init(k.K0sVars.KonnectivitySocketDir, 0755)
+	err = dir.Init(k.K0sVars.KonnectivitySocketDir, 0o755)
 	if err != nil {
 		k.EmitWithPayload("failed to initialize socket directory", err)
 		return fmt.Errorf("failed to initialize directory %s: %w", k.K0sVars.KonnectivitySocketDir, err)
@@ -142,7 +144,7 @@ func (k *Konnectivity) Start(ctx context.Context) error {
 }
 
 func (k *Konnectivity) serverArgs(count uint) []string {
-	return stringmap.StringMap{
+	params := stringmap.StringMap{
 		"--uds-name":                 filepath.Join(k.K0sVars.KonnectivitySocketDir, "konnectivity-server.sock"),
 		"--cluster-cert":             filepath.Join(k.K0sVars.CertRootDir, "server.crt"),
 		"--cluster-key":              filepath.Join(k.K0sVars.CertRootDir, "server.key"),
@@ -165,7 +167,13 @@ func (k *Konnectivity) serverArgs(count uint) []string {
 		"--server-id":                k.K0sVars.InvocationID,
 		"--proxy-strategies":         "destHost,default",
 		"--cipher-suites":            constant.AllowedTLS12CipherSuiteNames(),
-	}.ToArgs()
+	}
+
+	if k.clusterConfig.Spec.API.OnlyBindToAddress {
+		params["--agent-bind-address"] = k.clusterConfig.Spec.API.Address
+	}
+
+	return params.ToArgs()
 }
 
 func (k *Konnectivity) runServer(count uint) error {
