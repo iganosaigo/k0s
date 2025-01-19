@@ -43,8 +43,10 @@ type KonnectivityAgent struct {
 	*prober.EventEmitter
 }
 
-var _ manager.Component = (*KonnectivityAgent)(nil)
-var _ manager.Reconciler = (*KonnectivityAgent)(nil)
+var (
+	_ manager.Component  = (*KonnectivityAgent)(nil)
+	_ manager.Reconciler = (*KonnectivityAgent)(nil)
+)
 
 func (k *KonnectivityAgent) Init(_ context.Context) error {
 	k.log = logrus.WithFields(logrus.Fields{"component": "konnectivity-agent"})
@@ -55,7 +57,6 @@ func (k *KonnectivityAgent) Init(_ context.Context) error {
 }
 
 func (k *KonnectivityAgent) Start(ctx context.Context) error {
-
 	go func() {
 		serverCount, serverCountChanged := k.ServerCount()
 
@@ -276,6 +277,9 @@ spec:
             - --service-account-token-path=/var/run/secrets/tokens/konnectivity-agent-token
             - --agent-identifiers=host=$(NODE_IP)
             - --agent-id=$(NODE_IP)
+              {{- if .HostNetwork }}
+            - --health-server-host=localhost
+              {{- end }}
               {{- if .BindToNodeIP }}
             - --bind-address=$(NODE_IP)
               {{- end }}
@@ -290,6 +294,9 @@ spec:
               name: konnectivity-agent-token
           livenessProbe:
             httpGet:
+              {{- if .HostNetwork }}
+              host: 127.0.0.1
+              {{- end }}
               port: 8093
               path: /healthz
             initialDelaySeconds: 15

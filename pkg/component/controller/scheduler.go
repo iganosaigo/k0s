@@ -44,8 +44,10 @@ type Scheduler struct {
 	previousConfig stringmap.StringMap
 }
 
-var _ manager.Component = (*Scheduler)(nil)
-var _ manager.Reconciler = (*Scheduler)(nil)
+var (
+	_ manager.Component  = (*Scheduler)(nil)
+	_ manager.Reconciler = (*Scheduler)(nil)
+)
 
 const kubeSchedulerComponentName = "kube-scheduler"
 
@@ -89,6 +91,11 @@ func (a *Scheduler) Reconcile(_ context.Context, clusterConfig *v1beta1.ClusterC
 		"profiling":                 "false",
 		"v":                         a.LogLevel,
 	}
+
+	if clusterConfig.Spec.API.OnlyBindToAddress {
+		args["bind-address"] = clusterConfig.Spec.API.Address
+	}
+
 	for name, value := range clusterConfig.Spec.Scheduler.ExtraArgs {
 		if _, ok := args[name]; ok {
 			logrus.Warnf("overriding kube-scheduler flag with user provided value: %s", name)

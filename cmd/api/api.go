@@ -96,9 +96,16 @@ func (c *command) start() (err error) {
 			c.authMiddleware(c.caHandler(), "usage-controller-join")))
 	}
 
+	apiBindAddr := ""
+	if nodeConfig.Spec.API.OnlyBindToAddress {
+		apiBindAddr = nodeConfig.Spec.API.Address
+	}
+
+	apiHttpSocket := fmt.Sprintf("%s:%d", apiBindAddr, nodeConfig.Spec.API.K0sAPIPort)
+
 	srv := &http.Server{
 		Handler: mux,
-		Addr:    fmt.Sprintf(":%d", nodeConfig.Spec.API.K0sAPIPort),
+		Addr:    apiHttpSocket,
 		TLSConfig: &tls.Config{
 			MinVersion:   tls.VersionTLS12,
 			CipherSuites: constant.AllowedTLS12CipherSuiteIDs,
