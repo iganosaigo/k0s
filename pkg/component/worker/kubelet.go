@@ -196,6 +196,18 @@ func (k *Kubelet) Start(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to get nodename: %w", err)
 	}
+	logrus.Infof("using nodename %q", nodename)
+
+	bindIPv4, _, err := lookupHostname(ctx, nodename)
+	if err != nil {
+		logrus.WithError(err).Errorf("failed to lookup address from nodename %q", nodename)
+	} else if bindIPv4 != nil {
+		defaultBind := bindIPv4.String()
+		logrus.Infof("default bind ipv4 address is %q", defaultBind)
+		args["--node-ip"] = defaultBind
+		args["--address"] = defaultBind
+		args["--healthz-bind-address"] = defaultBind
+	}
 
 	if k.DualStackEnabled && extras["--node-ip"] == "" {
 		// Kubelet uses hostname lookup to autodetect the ip address, but
@@ -252,7 +264,7 @@ func (k *Kubelet) Start(ctx context.Context) error {
 		logrus.Warnf("failed to prepare local kubelet config: %s", err.Error())
 		return err
 	}
-	err = file.WriteContentAtomically(kubeletConfigPath, []byte(kubeletconfig), 0644)
+	err = file.WriteContentAtomically(kubeletConfigPath, []byte(kubeletconfig), 0o644)
 	if err != nil {
 		return fmt.Errorf("failed to write kubelet config: %w", err)
 	}

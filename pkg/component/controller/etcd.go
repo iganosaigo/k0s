@@ -58,8 +58,10 @@ type Etcd struct {
 	gid        int
 }
 
-var _ manager.Component = (*Etcd)(nil)
-var _ manager.Ready = (*Etcd)(nil)
+var (
+	_ manager.Component = (*Etcd)(nil)
+	_ manager.Ready     = (*Etcd)(nil)
+)
 
 // Init extracts the needed binaries
 func (e *Etcd) Init(_ context.Context) error {
@@ -229,6 +231,14 @@ func (e *Etcd) Start(ctx context.Context) error {
 			logrus.Warnf("overriding etcd flag with user provided value: %s", argName)
 		}
 		args[argName] = value
+	}
+
+	config, _ := e.K0sVars.NodeConfig()
+	if config.Spec.API.OnlyBindToAddress {
+		bindAddr := config.Spec.API.APIAddress()
+		if args["--listen-metrics-urls"] == "" {
+			args["--listen-metrics-urls"] = fmt.Sprintf("http://%s:2381", bindAddr)
+		}
 	}
 
 	// Specifying a minimum version of TLS 1.3 _and_ a list of cipher suites
